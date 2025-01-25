@@ -4,7 +4,8 @@
  */
 import { graphState } from './state.svelte.js';
 
-const BACKEND = '100.95.231.119:8000';
+// const BACKEND = '100.95.231.119:8000';
+const BACKEND = '127.0.0.1:8000';
 // const BASE_ENDPOINT=`ws://${BACKEND}/api/v1/ws/`
 const RPC_ENDPOINT = `ws://${BACKEND}/api/v1/ws/rpc`;
 
