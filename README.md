@@ -1,4 +1,6 @@
-# Thought Canvas
+# Quorm
+
+# Frontend
 
 ## Requirements
 
@@ -7,10 +9,12 @@
 
 ## Running Locally
 
-### Front End
-
 ```bash
 cd frontend
 npm install
 npm run open
 ```
+
+# Backend
+
+TODO
