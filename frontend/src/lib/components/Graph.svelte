@@ -8,7 +8,7 @@
 
 	let graphContainer; // The div containing the graph
 
-	let graph = $derived(new Graph().import(graphState));
+	let graph = $derived(new Graph().import(graphState.state));
 
 	let nodeCounter = createCounter();
 
