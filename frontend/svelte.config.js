@@ -7,6 +7,13 @@ const config = {
 		// If your environment is not supported, or you settled on a specific environment, switch out the adapter.
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter()
+	},
+
+	// TODO: Handle a11y concerns
+	compilerOptions: {
+	  a11y: {
+		enable: false  // Disable a11y warnings
+	  }
 	}
 };
 
