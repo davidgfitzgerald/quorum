@@ -1,11 +1,12 @@
 <script>
-    import { onMount } from "svelte";
     import Graph from "graphology";
 
     // graphContainer is the div containing the graph
     let graphContainer;
+    const graph = $state(new Graph());
+    
 
-    onMount(async () => {
+    $effect(async () => {
         if (typeof window !== "undefined") {
 
             /**
@@ -22,7 +23,6 @@
              */
             const { Sigma } = await import("sigma");
             
-            const graph = new Graph();
             graph.addNode("1", { label: "Node 1", x: 0, y: 0, size: 10, color: "blue" });
             graph.addNode("2", { label: "Node 2", x: 1, y: 1, size: 20, color: "red" });
             graph.addEdge("1", "2", { size: 5, color: "purple" });
