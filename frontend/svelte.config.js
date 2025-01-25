@@ -8,13 +8,6 @@ const config = {
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter()
 	},
-
-	// TODO: Handle a11y concerns
-	compilerOptions: {
-	  a11y: {
-		enable: false  // Disable a11y warnings
-	  }
-	}
 };
 
 export default config;

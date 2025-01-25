@@ -1,4 +1,5 @@
 <script>
+	import { createCounter } from "$lib/utils/Counter.svelte.js";
     import Graph from "graphology";
 
     // graphContainer is the div containing the graph
@@ -6,9 +7,15 @@
     const g = new Graph()
     let graph = $state(new Graph());
 
-    // $inspect(graph)
+    let nodeCounter = createCounter()
     
+    // TODO - get state from server
     let graphJSON = $derived(JSON.stringify(graph.export(), null, 2))
+
+    function addNode() {
+        // Server call
+        graph.addNode(nodeCounter.next(), { label: `Node ${nodeCounter.count}`, x: 3, y: 2, size: 30, color: "green" });
+    }
 
     function refreshState() {
         /**
@@ -47,9 +54,9 @@
             const { Sigma } = await import("sigma");
             
             console.log("Graph state updated")
-            graph.addNode("1", { label: "Node 1", x: 0, y: 0, size: 10, color: "blue" });
-            graph.addNode("2", { label: "Node 2", x: 1, y: 1, size: 20, color: "red" });
-            graph.addEdge("1", "2", { size: 5, color: "purple" });
+            graph.addNode(nodeCounter.next(), { label: `Node ${nodeCounter.count}`, x: 0, y: 0, size: 10, color: "blue" });
+            graph.addNode(nodeCounter.next(), { label: `Node ${nodeCounter.count}`, x: 1, y: 1, size: 20, color: "red" });
+            graph.addEdge(1, "2", { size: 5, color: "purple" });
 
             refreshState()  // TODO remove need for this call
 
@@ -62,8 +69,12 @@
 
 <h1 class="text-4xl p-8">Quorum</h1>
 
+<!-- TODO: handle a11y properly -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div 
     bind:this={graphContainer}
+    onclick={addNode}
     class="graph-container"
 >
     <!-- Graph will be inserted here -->
