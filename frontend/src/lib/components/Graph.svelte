@@ -2,21 +2,23 @@
 	import { createCounter } from '$lib/utils/Counter.svelte.js';
 	import Graph from 'graphology';
 	import { getWebSocket } from '$lib/websocket.js';
-	import { backendState } from '$lib/state.svelte.js';
+	import { graphState } from '$lib/state.svelte.js';
 
 	const socket = getWebSocket();
 
-	let graphContainer;  // The div containing the graph
-    
-	let graph = $derived(new Graph().import(backendState));
+	let graphContainer; // The div containing the graph
+
+	let graph = $derived(new Graph().import(graphState));
 
 	let nodeCounter = createCounter();
 
 	function addNode() {
-		socket.send(JSON.stringify({
-			method: 'addNode',
-			payload: { label: `Node ${nodeCounter.count}`, x: 3, y: 2, size: 30, color: 'green' }
-		}));
+		socket.send(
+			JSON.stringify({
+				method: 'addNode',
+				payload: { label: `Node ${nodeCounter.count}`, x: 3, y: 2, size: 30, color: 'green' }
+			})
+		);
 	}
 
 	$effect(async () => {
@@ -55,7 +57,7 @@
 <h1 class="p-8 text-4xl">Backend State</h1>
 
 <div class="p-8">
-	<pre>{JSON.stringify(backendState, null, 2)}</pre>
+	<pre>{JSON.stringify(graphState, null, 2)}</pre>
 </div>
 
 <style>

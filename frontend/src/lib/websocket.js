@@ -2,11 +2,15 @@
  * This file contains a singleton client-side WebSocket
  * that connects to the backend.
  */
+import { graphState } from "./state.svelte.js";
+
+
 const BACKEND = "100.95.231.119:8000"
 // const BASE_ENDPOINT=`ws://${BACKEND}/api/v1/ws/`
 const RPC_ENDPOINT=`ws://${BACKEND}/api/v1/ws/rpc`
 
 let socket;
+
 
 export function getWebSocket() {
   if (!socket) {
@@ -18,7 +22,10 @@ export function getWebSocket() {
     };
 
     socket.onmessage = (event) => {
-      console.log("Message from backend:", event.data);
+        console.log("Message from backend:", event.data);
+        if (event.data.type == "state") {
+            graphState = event.data.payload
+        }
     };
 
     socket.onerror = (error) => {
