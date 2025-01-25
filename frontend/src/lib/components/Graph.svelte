@@ -3,8 +3,12 @@
 
     // graphContainer is the div containing the graph
     let graphContainer;
-    const graph = $state(new Graph());
+    const g = new Graph()
+    let graph = $state(new Graph());
+
+    // $inspect(graph)
     
+    let graphJSON = $derived(JSON.stringify(graph.export(), null, 2))
 
     $effect(async () => {
         if (typeof window !== "undefined") {
@@ -15,17 +19,35 @@
              * 
              * ReferenceError: WebGL2RenderingContext is not defined
              * 
-             * Solution:
+             * Temporary Solution:
              * Dynamically import Sigma - this is because it depends on WebGL2RenderingContext
              * which is a browser-specific API (not available on the server).
              * 
-             * There may be a better long term solution
+             * TODO:
+             * Better long term solution
              */
             const { Sigma } = await import("sigma");
             
+            console.log("Graph state updated")
             graph.addNode("1", { label: "Node 1", x: 0, y: 0, size: 10, color: "blue" });
             graph.addNode("2", { label: "Node 2", x: 1, y: 1, size: 20, color: "red" });
             graph.addEdge("1", "2", { size: 5, color: "purple" });
+            
+            /**
+             * Problem:
+             * Svelte is not picking up that the graph object has changed 
+             * with addNode and addEdge calls.
+             * 
+             * Solution:
+             * Re-assign graph to tell svelte that the state has changed
+             * and to re-render the element in the UI.
+             * 
+             * TODO:
+             * Better long term solution
+             */
+            const graphTmp = graph;
+            graph = null
+            graph = graphTmp
 
             // Initialize Sigma with the graphology graph and container
             // Insert the graph in the graphContainer
@@ -34,10 +56,16 @@
     });
 </script>
 
-<h1>Quorum</h1>
+<h1 class="text-4xl p-8">Quorum</h1>
 
 <div bind:this={graphContainer} class="graph-container">
     <!-- Graph will be inserted here -->
+</div>
+
+<h1 class="text-4xl p-8">Graph JSON</h1>
+
+<div class="p-8">
+    <pre>{graphJSON}</pre>
 </div>
 
 <style>
