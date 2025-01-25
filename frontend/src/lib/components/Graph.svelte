@@ -1,10 +1,13 @@
 <script>
 	import { createCounter } from "$lib/utils/Counter.svelte.js";
     import Graph from "graphology";
+    import { getWebSocket } from "$lib/websocket.js"
+
+    
+    const socket = getWebSocket();
 
     // graphContainer is the div containing the graph
     let graphContainer;
-    const g = new Graph()
     let graph = $state(new Graph());
 
     let nodeCounter = createCounter()
