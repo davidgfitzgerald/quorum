@@ -1,3 +1,7 @@
+/**
+ * This file contains a singleton client-side WebSocket
+ * that connects to the backend.
+ */
 const BACKEND = "100.95.231.119:8000"
 // const BASE_ENDPOINT=`ws://${BACKEND}/api/v1/ws/`
 const RPC_ENDPOINT=`ws://${BACKEND}/api/v1/ws/rpc`
@@ -22,7 +26,7 @@ export function getWebSocket() {
     };
 
     socket.onclose = (event) => {
-      console.log("WebSocket connection to backend closed:", event.reason);
+      console.log("WebSocket connection to backend closed/failed:", event.reason);
       // Optionally, you can handle reconnection logic here
     };
 

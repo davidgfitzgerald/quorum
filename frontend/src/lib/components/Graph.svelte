@@ -2,41 +2,21 @@
 	import { createCounter } from '$lib/utils/Counter.svelte.js';
 	import Graph from 'graphology';
 	import { getWebSocket } from '$lib/websocket.js';
+	import { backendState } from '$lib/state.svelte.js';
 
 	const socket = getWebSocket();
 
-	// graphContainer is the div containing the graph
-	let graphContainer;
-	let graph = $state(new Graph());
+	let graphContainer;  // The div containing the graph
+    
+	let graph = $derived(new Graph().import(backendState));
 
 	let nodeCounter = createCounter();
 
-	// TODO - get state from server
-	let graphJSON = $derived(JSON.stringify(graph.export(), null, 2));
-
 	function addNode() {
-		socket.send({
+		socket.send(JSON.stringify({
 			method: 'addNode',
 			payload: { label: `Node ${nodeCounter.count}`, x: 3, y: 2, size: 30, color: 'green' }
-		});
-	}
-
-	function refreshState() {
-		/**
-		 * Problem:
-		 * Svelte is not picking up that the graph object has changed
-		 * with addNode and addEdge calls.
-		 *
-		 * Solution:
-		 * Re-assign graph to tell svelte that the state has changed
-		 * and to re-render the element in the UI.
-		 *
-		 * TODO:
-		 * Better long term solution
-		 */
-		const graphTmp = graph;
-		graph = null;
-		graph = graphTmp;
+		}));
 	}
 
 	$effect(async () => {
@@ -56,25 +36,6 @@
 			 */
 			const { Sigma } = await import('sigma');
 
-			console.log('Graph state updated');
-			graph.addNode(nodeCounter.next(), {
-				label: `Node ${nodeCounter.count}`,
-				x: 0,
-				y: 0,
-				size: 10,
-				color: 'blue'
-			});
-			graph.addNode(nodeCounter.next(), {
-				label: `Node ${nodeCounter.count}`,
-				x: 1,
-				y: 1,
-				size: 20,
-				color: 'red'
-			});
-			graph.addEdge(1, '2', { size: 5, color: 'purple' });
-
-			refreshState(); // TODO remove need for this call
-
 			// Initialize Sigma with the graphology graph and container
 			// Insert the graph in the graphContainer
 			new Sigma(graph, graphContainer);
@@ -91,10 +52,10 @@
 	<!-- Graph will be inserted here -->
 </div>
 
-<h1 class="p-8 text-4xl">Graph JSON</h1>
+<h1 class="p-8 text-4xl">Backend State</h1>
 
 <div class="p-8">
-	<pre>{graphJSON}</pre>
+	<pre>{JSON.stringify(backendState, null, 2)}</pre>
 </div>
 
 <style>
