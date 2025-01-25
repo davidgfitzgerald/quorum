@@ -1,7 +1,13 @@
+from pathlib import Path
+import json
 import uuid
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter(tags=["ws"], prefix="/ws")
+
+# This is a json representation of a graph in a format usable by sigma.js
+# It exists in lieu of a database
+STATE = Path(__file__).parent.parent.parent / "core" / "state.json"
 
 
 class ConnectionManager:
@@ -58,7 +64,9 @@ async def websocket_rpc(websocket: WebSocket):
     client_id = await manager.connect(websocket)
     try:
         # Immediately return the client_id to the client
-        await websocket.send_json({"client_id": str(client_id)})
+        # await websocket.send_json({"client_id": str(client_id)})
+        payload = {"type": "state", "payload": json.load(STATE.open())}
+        await websocket.send_json(payload)
 
         while True:
             data = await websocket.receive_json()
@@ -69,6 +77,9 @@ async def websocket_rpc(websocket: WebSocket):
                     await websocket.send_json({"pong": True})
                 case "echo":
                     await websocket.send_json({"echo": data.get("message")})
+                case "addNode":
+                    payload = {"type": "state", "payload": json.load(STATE.open())}
+                    await websocket.send_json(payload)
                 case _:
                     await websocket.send_json({"error": f"Method {method} not found"})
 
