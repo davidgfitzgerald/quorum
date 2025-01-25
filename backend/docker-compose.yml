@@ -16,32 +16,32 @@ services:
       timeout: 5s
       retries: 5
 
-  neo4j:
-      image: neo4j:latest
-      container_name: neo4j-db
-      ports:
-        # Bolt protocol port
-        - "7687:7687"
-        # HTTP port
-        - "7474:7474"
-        # HTTPS port
-        - "7473:7473"
-      environment:
-        - NEO4J_AUTH=neo4j/yourpassword
-        - NEO4J_apoc_export_file_enabled=true
-        - NEO4J_apoc_import_file_enabled=true
-        - NEO4J_apoc_import_file_use__neo4j__config=true
-      volumes:
-        # Data persistence
-        - ./neo4j/data:/data
-        # Database logs
-        - ./neo4j/logs:/logs
-        # Import directory for loading initial data
-        - ./neo4j/import:/var/lib/neo4j/import
-        # Plugins directory for extensions
-        - ./neo4j/plugins:/plugins
-      healthcheck:
-        test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1"]
-        interval: 30s
-        timeout: 10s
-        retries: 3
+  # neo4j:
+  #     image: neo4j:latest
+  #     container_name: neo4j-db
+  #     ports:
+  #       # Bolt protocol port
+  #       - "7687:7687"
+  #       # HTTP port
+  #       - "7474:7474"
+  #       # HTTPS port
+  #       - "7473:7473"
+  #     environment:
+  #       - NEO4J_AUTH=neo4j/yourpassword
+  #       - NEO4J_apoc_export_file_enabled=true
+  #       - NEO4J_apoc_import_file_enabled=true
+  #       - NEO4J_apoc_import_file_use__neo4j__config=true
+  #     volumes:
+  #       # Data persistence
+  #       - ./neo4j/data:/data
+  #       # Database logs
+  #       - ./neo4j/logs:/logs
+  #       # Import directory for loading initial data
+  #       - ./neo4j/import:/var/lib/neo4j/import
+  #       # Plugins directory for extensions
+  #       - ./neo4j/plugins:/plugins
+  #     healthcheck:
+  #       test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider localhost:7474 || exit 1"]
+  #       interval: 30s
+  #       timeout: 10s
+  #       retries: 3
