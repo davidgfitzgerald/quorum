@@ -28,7 +28,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 
 ENV PYTHONPATH=/app
 
-COPY ./pyproject.toml ./uv.lock ./README.md /quorum/ ./
+COPY ./pyproject.toml ./uv.lock /quorum/ ./
 
 COPY ./quorum /app/quorum
 
