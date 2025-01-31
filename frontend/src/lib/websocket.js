@@ -2,6 +2,8 @@
  * This file contains a singleton client-side WebSocket
  * that connects to the backend.
  */
+import { data } from "./state.svelte";
+
 const BACKEND = "127.0.0.1:8000"  // TODO: make configurable
 const RPC_ENDPOINT = `ws://${BACKEND}/api/v1/ws/rpc`
 
@@ -23,6 +25,13 @@ export function connectBackend() {
 
     socket.onmessage = (event) => {
         console.log("Message from backend:", event.data)
+        const jsonData = JSON.parse(event.data)
+
+        if (jsonData.type == "state") {
+            data.state = jsonData.payload
+        } else {
+            console.warn(`Unhandled type=${jsonData.type} message`)
+        }
     }
 
     socket.onerror = (error) => {
