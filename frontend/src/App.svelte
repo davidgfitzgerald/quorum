@@ -1,5 +1,7 @@
 <script>
-
+	import Graph from "./lib/components/Graph.svelte";
 </script>
 
-<h1>Hello, World!</h1>
+<h1>Quorum</h1>
+
+<Graph></Graph>

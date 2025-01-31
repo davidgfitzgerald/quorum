@@ -8,11 +8,6 @@
  */
 const example_state = {
 	state: {
-		options: {
-			type: 'mixed',
-			multi: false,
-			allowSelfLoops: true
-		},
 		attributes: {},
 		nodes: [
 			{
@@ -50,4 +45,4 @@ const example_state = {
 	}
 }
 
-export const graphState = $state(example_state);
+export const data = $state(example_state);
