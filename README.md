@@ -4,8 +4,8 @@
 
 ## Requirements
 
-- Node `>=23.6.1`
-- npm `>=11.0.0`
+- Node `>=23.7.0`
+- npm `>=11.1.0`
 
 ### Node/npm versioning
 
