@@ -8,7 +8,10 @@ const RPC_ENDPOINT = `ws://${BACKEND}/api/v1/ws/rpc`
 let socket = null;
 
 
-export function getWebSocket() {
+export function connectBackend() {
+    /**
+     * Connect to the backend and return the singleton websocket.
+     */
     if (socket) return socket
 
     console.log("Initialising WebSocket connection to backend")
