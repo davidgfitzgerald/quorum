@@ -2,7 +2,7 @@
 
 # Frontend
 
-## Requirements
+## Local Requirements
 
 - Node `>=23.7.0`
 - npm `>=11.1.0`
@@ -56,11 +56,30 @@ docker compose up --build --force-recreate -d
 docker compose stop
 ```
 
-## Run locally
+## Local Requirements
+
+- [poetry](https://python-poetry.org/) `>=1.8.1`
+- [uv](https://docs.astral.sh/uv) `>=0.5.26`
+- [just](https://github.com/casey/just)
+
+## Running Locally
 
 ```shell
+# Work from backend dir
+cd backend
 
+# Create virtual environment with uv
+uv python install 3.13
+uv venv --python 3.13
+source .venv/bin/activate
+
+# Install python packages with uv
+uv sync
+
+# Run the backend server with fastapi
+fastapi run --workers 1 quorum/main.py
 ```
 
-### Connect
+## Connect
+
 2. Connect with `xh http://0.0.0.0:8000/api/v1/stub/ x==y` or `websocat ws://0.0.0.0:8000/api/v1/ws/rpc`
