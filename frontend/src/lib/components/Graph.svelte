@@ -2,6 +2,10 @@
 	import Graph from 'graphology';
 	import Sigma from 'sigma';
 	import { data } from '../state.svelte';
+	import { getWebSocket } from '../websocket';
+
+	// The clients websocket connection to the backend
+	const socket = getWebSocket()
 
 	// The div containing the sigma graph
 	let sigmaGraphContainer;
@@ -35,11 +39,26 @@
 			sigmaGraph = new Sigma(graph, sigmaGraphContainer);
 		}
 	});
+
+	/**
+	 * @param {MouseEvent} event
+	 */
+	function addNode(event) {
+		console.log(`Clicked at (${event.clientX}, ${event.clientY})`)
+		console.log("Sent ping to backend")
+		socket.send(JSON.stringify({"method": "ping"}))
+	}
 </script>
 
 <h1>Graph</h1>
 
-<div bind:this={sigmaGraphContainer} class="graph-container">
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div
+	bind:this={sigmaGraphContainer}
+	class="graph-container"
+	onclick={addNode}
+	>
 	<!-- Sigma graph will be inserted here -->
 </div>
 
