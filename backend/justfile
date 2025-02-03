@@ -1,8 +1,9 @@
 _default:
   just --list
 
-start-docker:
-    docker compose up --build --force-recreate -d
+# Pass args such as -d through start-docker
+start-docker extra_args='':
+    docker compose up --build --force-recreate {{extra_args}}
 
 stop-docker:
     docker compose stop
