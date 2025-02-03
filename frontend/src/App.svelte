@@ -1,11 +1,11 @@
 <script>
 	import Graph from './lib/components/Graph.svelte';
-	import { connectBackend } from './lib/websocket';
+	import { getWebSocket } from './lib/websocket';
 
 	/**
 	 * On app startup connect to the backend.
 	 */
-	connectBackend();
+	getWebSocket();
 </script>
 
 <h1>Quorum</h1>

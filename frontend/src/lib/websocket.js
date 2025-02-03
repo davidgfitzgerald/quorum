@@ -9,10 +9,11 @@ const RPC_ENDPOINT = `ws://${BACKEND}/api/v1/ws/rpc`;
 
 let socket = null;
 
-export function connectBackend() {
-	/**
-	 * Connect to the backend and return the singleton websocket.
-	 */
+/**
+ * Connect to the backend and return the singleton websocket.
+ * @returns {WebSocket}
+ */
+export function getWebSocket() {
 	if (socket) return socket;
 
 	console.log('Initialising WebSocket connection to backend');
@@ -23,14 +24,18 @@ export function connectBackend() {
 	};
 
 	socket.onmessage = (event) => {
-		console.log('Message from backend:', event.data);
+		console.debug('Message from backend:', event.data);
 		const jsonData = JSON.parse(event.data);
 
-		if (jsonData.type == 'state') {
+		if (jsonData.pong) {
+			console.log("Received pong from backend")
+			
+		} else if (jsonData.type == 'state') {
 			data.state = jsonData.payload;
 		} else {
 			console.warn(`Unhandled type=${jsonData.type} message`);
 		}
+
 	};
 
 	socket.onerror = (error) => {
