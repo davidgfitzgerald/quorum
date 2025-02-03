@@ -117,6 +117,7 @@ async def websocket_rpc(websocket: WebSocket):
 
         while True:
             data = await websocket.receive_json()
+            print("Received data:", data)
 
             method = data.get("method")
             match method:
@@ -128,6 +129,7 @@ async def websocket_rpc(websocket: WebSocket):
                     payload = {"type": "state", "payload": json.load(STATE.open())}
                     await websocket.send_json(payload)
                 case _:
+                    print(f"Unhandled method: {method}")
                     await websocket.send_json({"error": f"Method {method} not found"})
 
     except WebSocketDisconnect:
