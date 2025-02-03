@@ -1,6 +1,8 @@
 from pathlib import Path
 import json
+import typing
 import uuid
+from starlette import status
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
 router = APIRouter(tags=["ws"], prefix="/ws")
@@ -8,6 +10,51 @@ router = APIRouter(tags=["ws"], prefix="/ws")
 # This is a json representation of a graph in a format usable by sigma.js
 # It exists in lieu of a database
 STATE = Path(__file__).parent.parent.parent / "core" / "state.json"
+
+
+class WSRoute:
+    def __init__(self, websocket: WebSocket):
+        self._websocket = websocket
+
+    def __await__(self) -> typing.Generator:
+        return self.dispatch().__await__()
+
+    async def dispatch(self) -> None:
+        """Websocket lifecycle.
+
+        Raises:
+            exc: _description_
+        """
+        # Websocket lifecycle
+        await self.on_connect()
+
+        close_code: int = status.WS_1000_NORMAL_CLOSURE
+        try:
+            while True:
+                data = await self._websocket.receive_text()
+                await self.on_receive(data)
+        except WebSocketDisconnect:
+            # Handle client normal disconnect here
+            pass
+        except Exception as exc:
+            # Handle other types of errors here
+            close_code = status.WS_1011_INTERNAL_ERROR
+            raise exc from None
+        finally:
+            await self.on_disconnect(close_code)
+
+    async def on_connect(self):
+        # Handle your new connection here
+        await self._websocket.accept()
+        pass
+
+    async def on_disconnect(self, close_code: int):
+        # Handle client disconnect here
+        pass
+
+    async def on_receive(self, msg: typing.Any):
+        # Handle client messaging here
+        pass
 
 
 class ConnectionManager:
