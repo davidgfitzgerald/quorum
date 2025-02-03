@@ -47,5 +47,6 @@
 	.graph-container {
 		width: 100%;
 		height: 700px;
+		outline: medium solid lightgrey;
 	}
 </style>
