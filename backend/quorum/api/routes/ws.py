@@ -1,15 +1,11 @@
-from pathlib import Path
-import json
 import typing
 import uuid
 from starlette import status
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-router = APIRouter(tags=["ws"], prefix="/ws")
+from quorum.core.state import state
 
-# This is a json representation of a graph in a format usable by sigma.js
-# It exists in lieu of a database
-STATE = Path(__file__).parent.parent.parent / "core" / "state.json"
+router = APIRouter(tags=["ws"], prefix="/ws")
 
 
 class WSRoute:
@@ -112,7 +108,7 @@ async def websocket_rpc(websocket: WebSocket):
     try:
         # Immediately return the client_id to the client
         # await websocket.send_json({"client_id": str(client_id)})
-        payload = {"type": "state", "payload": json.load(STATE.open())}
+        payload = {"type": "state", "payload": state.graph.model_dump()}
         await websocket.send_json(payload)
 
         while True:
@@ -126,7 +122,14 @@ async def websocket_rpc(websocket: WebSocket):
                 case "echo":
                     await websocket.send_json({"echo": data.get("message")})
                 case "addNode":
-                    payload = {"type": "state", "payload": json.load(STATE.open())}
+                    # TODO error handling
+                    print("Received addNode RPC call")
+                    x = data.get("payload").get("x")
+                    y = data.get("payload").get("y")
+                    print(f"Received x={x}, y={y}")
+                    state.add_node(x, y)
+                    payload = {"type": "state", "payload": state.graph.model_dump()}
+                    print("Sending state", state.graph.model_dump())
                     await websocket.send_json(payload)
                 case _:
                     print(f"Unhandled method: {method}")

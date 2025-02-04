@@ -45,8 +45,9 @@
 	 */
 	function addNode(event) {
 		console.log(`Clicked at (${event.clientX}, ${event.clientY})`)
-		console.log("Sent ping to backend")
-		socket.send(JSON.stringify({"method": "ping"}))
+		// console.log("Sent ping to backend")
+		// socket.send(JSON.stringify({"method": "ping"}))
+		socket.send(JSON.stringify({"method": "addNode", "payload": {"x": event.clientX, "y": event.clientY}}))
 	}
 </script>
 
