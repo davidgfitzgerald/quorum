@@ -11,7 +11,10 @@
 	let sigmaGraphContainer;
 
 	// The sigma graph instance.
-	let sigmaGraph = null;
+	/**
+	 * @type {Sigma}
+	 */
+	let sigmaInstance = null;
 
 	/**
 	 * The reactive graphology graph data derived whenever the
@@ -33,10 +36,10 @@
 		 * if we didn't use `$effect` here and instead used
 		 * `$derived`.
 		 */
-		if (sigmaGraph) {
-			sigmaGraph.setGraph(graph);
+		if (sigmaInstance) {
+			sigmaInstance.setGraph(graph);
 		} else {
-			sigmaGraph = new Sigma(graph, sigmaGraphContainer);
+			sigmaInstance = new Sigma(graph, sigmaGraphContainer);
 		}
 	});
 
@@ -44,9 +47,25 @@
 	 * @param {MouseEvent} event
 	 */
 	function addNode(event) {
-		console.log(`Clicked at (${event.clientX}, ${event.clientY})`)
-		console.log("Sent ping to backend")
-		socket.send(JSON.stringify({"method": "ping"}))
+		if (socket.readyState === WebSocket.CLOSED) {
+			console.error("Cannot send addNode request: Backend connection has closed/failed.")
+			return
+		}
+		
+		const {x, y} = getGridCoords(event)
+		socket.send(JSON.stringify({"method": "addNode", "payload": {x, y}}))
+	}
+
+	/**
+	 * Find the coordinates on the sigma grid.
+	 * 
+	 * Converts the mouse viewport co-ordinates into sigma
+	 * graph co-ordinates.
+	 * @param {MouseEvent} event
+	 * @returns {import('sigma/types').Coordinates} format: {x: ..., y: ...}
+	*/
+	function getGridCoords(event) {
+		return sigmaInstance.viewportToGraph({ x: event.offsetX, y: event.offsetY})
 	}
 </script>
 
@@ -54,6 +73,7 @@
 
 <!-- svelte-ignore a11y_click_events_have_key_events -->
 <!-- svelte-ignore a11y_no_static_element_interactions -->
+<!-- svelte-ignore a11y_mouse_events_have_key_events -->
 <div
 	bind:this={sigmaGraphContainer}
 	class="graph-container"

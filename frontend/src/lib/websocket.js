@@ -27,15 +27,28 @@ export function getWebSocket() {
 		console.debug('Message from backend:', event.data);
 		const jsonData = JSON.parse(event.data);
 
-		if (jsonData.pong) {
-			console.log("Received pong from backend")
-			
-		} else if (jsonData.type == 'state') {
-			data.state = jsonData.payload;
-		} else {
-			console.warn(`Unhandled type=${jsonData.type} message`);
+		if (jsonData.type === undefined) {
+			console.error("Cannot parse message: expected a 'type' field")
+			return 
 		}
 
+		const type = jsonData.type
+
+		switch (type) {
+			case "state":
+				data.state = jsonData.payload;
+				return 
+			case "pong":
+				console.log("Received pong from backend")
+				break;
+			case "error":
+				console.error("Backend error:")
+				console.error(jsonData.error)
+				break
+			default:
+				console.warn(`Unhandled type=${type} message`);
+				break;
+		}
 	};
 
 	socket.onerror = (error) => {

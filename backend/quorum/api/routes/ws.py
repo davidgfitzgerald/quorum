@@ -1,15 +1,12 @@
-from pathlib import Path
-import json
 import typing
 import uuid
+from fastapi.websockets import WebSocketState
 from starlette import status
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-router = APIRouter(tags=["ws"], prefix="/ws")
+from quorum.core.state import state
 
-# This is a json representation of a graph in a format usable by sigma.js
-# It exists in lieu of a database
-STATE = Path(__file__).parent.parent.parent / "core" / "state.json"
+router = APIRouter(tags=["ws"], prefix="/ws")
 
 
 class WSRoute:
@@ -68,8 +65,16 @@ class ConnectionManager:
         self.active_connections[client_id] = websocket
         return client_id
 
-    async def disconnect(self, client_id: uuid.UUID):
-        self.active_connections.pop(client_id)
+    async def disconnect(self, client_id: uuid.UUID, code: int):
+        # Send the close message to the connected client
+        print(f"Disconnecting client: {client_id}")
+
+        websocket = self.active_connections.pop(client_id)
+        if websocket.client_state == WebSocketState.DISCONNECTED:
+            print(f"WebSocket is already disconnected")
+        else:
+            print(f"Closing WebSocket")
+            await websocket.close(code=code)
 
     async def broadcast(self, message: str, sender_id: uuid.UUID):
         disconnected_clients = []
@@ -112,7 +117,7 @@ async def websocket_rpc(websocket: WebSocket):
     try:
         # Immediately return the client_id to the client
         # await websocket.send_json({"client_id": str(client_id)})
-        payload = {"type": "state", "payload": json.load(STATE.open())}
+        payload = {"type": "state", "payload": state.graph.model_dump()}
         await websocket.send_json(payload)
 
         while True:
@@ -122,18 +127,29 @@ async def websocket_rpc(websocket: WebSocket):
             method = data.get("method")
             match method:
                 case "ping":
-                    await websocket.send_json({"pong": True})
+                    await websocket.send_json({"type": "pong"})
                 case "echo":
-                    await websocket.send_json({"echo": data.get("message")})
+                    await websocket.send_json({"type": "echo", "message": data.get("message")})
                 case "addNode":
-                    payload = {"type": "state", "payload": json.load(STATE.open())}
+                    # TODO error handling
+                    print("Received addNode RPC call")
+                    x = data.get("payload").get("x")
+                    y = data.get("payload").get("y")
+                    print(f"Received x={x}, y={y}")
+                    state.add_node(x, y)
+                    payload = {"type": "state", "payload": state.graph.model_dump()}
+                    print("Sending state", state.graph.model_dump())
                     await websocket.send_json(payload)
                 case _:
                     print(f"Unhandled method: {method}")
-                    await websocket.send_json({"error": f"Method {method} not found"})
+                    await websocket.send_json({"type": "error", "message": f"Method {method} not found"})
 
     except WebSocketDisconnect:
-        await manager.disconnect(client_id)
+        print("Client disconnected websocket.")
     except Exception as exc:
+        # Just for development, send the exception to the front end.
+        await websocket.send_json({"type":"error", "message": str(exc)})
         print(f"{exc}")
-        # await manager.disconnect(client_id)
+    finally:
+        # code 1011 chosen from https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
+        await manager.disconnect(client_id, code=1011)
