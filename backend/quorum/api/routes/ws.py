@@ -1,100 +1,12 @@
-import typing
-import uuid
-from fastapi.websockets import WebSocketState
-from starlette import status
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
 
-from quorum.core.state import state
+from quorum.core.state import graph
+from quorum.core.connection import manager
 
-router = APIRouter(tags=["ws"], prefix="/ws")
-
-
-class WSRoute:
-    def __init__(self, websocket: WebSocket):
-        self._websocket = websocket
-
-    def __await__(self) -> typing.Generator:
-        return self.dispatch().__await__()
-
-    async def dispatch(self) -> None:
-        """Websocket lifecycle.
-
-        Raises:
-            exc: _description_
-        """
-        # Websocket lifecycle
-        await self.on_connect()
-
-        close_code: int = status.WS_1000_NORMAL_CLOSURE
-        try:
-            while True:
-                data = await self._websocket.receive_text()
-                await self.on_receive(data)
-        except WebSocketDisconnect:
-            # Handle client normal disconnect here
-            pass
-        except Exception as exc:
-            # Handle other types of errors here
-            close_code = status.WS_1011_INTERNAL_ERROR
-            raise exc from None
-        finally:
-            await self.on_disconnect(close_code)
-
-    async def on_connect(self):
-        # Handle your new connection here
-        await self._websocket.accept()
-        pass
-
-    async def on_disconnect(self, close_code: int):
-        # Handle client disconnect here
-        pass
-
-    async def on_receive(self, msg: typing.Any):
-        # Handle client messaging here
-        pass
-
-
-class ConnectionManager:
-    def __init__(self):
-        # Store connections as a dict of client_id: WebSocket
-        self.active_connections: dict[uuid.UUID, WebSocket] = {}
-
-    async def connect(self, websocket: WebSocket) -> uuid.UUID:
-        await websocket.accept()
-        client_id = uuid.uuid4()
-        self.active_connections[client_id] = websocket
-        return client_id
-
-    async def disconnect(self, client_id: uuid.UUID, code: int):
-        # Send the close message to the connected client
-        print(f"Disconnecting client: {client_id}")
-
-        websocket = self.active_connections.pop(client_id)
-        if websocket.client_state == WebSocketState.DISCONNECTED:
-            print(f"WebSocket is already disconnected")
-        else:
-            print(f"Closing WebSocket")
-            await websocket.close(code=code)
-
-    async def broadcast(self, message: str, sender_id: uuid.UUID):
-        disconnected_clients = []
-
-        for client_id, websocket in self.active_connections.items():
-            if client_id != sender_id:
-                try:
-                    await websocket.send_text(message)
-                except Exception:
-                    print(f"Error sending message to client {client_id}")
-                    # If sending fails, mark client for removal
-                    disconnected_clients.append(client_id)
-
-        # Clean up any disconnected clients
-        for client_id in disconnected_clients:
-            print(f"Client {client_id} disconnected, removing from active connections")
-            await self.disconnect(client_id)
-
-
-manager = ConnectionManager()
+router = APIRouter(
+    tags=["ws"], 
+    prefix="/ws"
+)
 
 
 @router.websocket("/")
