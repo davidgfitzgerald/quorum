@@ -48,12 +48,6 @@ class Graph(BaseModel):
     attributes: dict[str, Any]  # TODO
     nodes: list[Node]
     edges: list[Edge]
-
-
-class State:
-    # TODO - determine whether it makes sense to put methods on the Graph model
-    def __init__(self, state: dict):
-        self.graph = Graph(**state)
     
     def add_node(self, x, y):
         # Inject some random data for the time being
@@ -71,7 +65,7 @@ class State:
                 color=color
             )
         )
-        self.graph.nodes.append(node)
+        self.nodes.append(node)
 
 
-state = State(STATE)
+graph = Graph(**STATE)

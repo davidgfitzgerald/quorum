@@ -114,10 +114,9 @@ async def websocket_echo(websocket: WebSocket):
 @router.websocket("/rpc")
 async def websocket_rpc(websocket: WebSocket):
     client_id = await manager.connect(websocket)
+    state = graph.model_dump()
     try:
-        # Immediately return the client_id to the client
-        # await websocket.send_json({"client_id": str(client_id)})
-        payload = {"type": "state", "payload": state.graph.model_dump()}
+        payload = {"type": "state", "payload": state}
         await websocket.send_json(payload)
 
         while True:
@@ -136,9 +135,10 @@ async def websocket_rpc(websocket: WebSocket):
                     x = data.get("payload").get("x")
                     y = data.get("payload").get("y")
                     print(f"Received x={x}, y={y}")
-                    state.add_node(x, y)
-                    payload = {"type": "state", "payload": state.graph.model_dump()}
-                    print("Sending state", state.graph.model_dump())
+                    graph.add_node(x, y)
+                    state = graph.model_dump()
+                    payload = {"type": "state", "payload": state}
+                    print("Sending state", state)
                     await websocket.send_json(payload)
                 case _:
                     print(f"Unhandled method: {method}")
@@ -147,7 +147,7 @@ async def websocket_rpc(websocket: WebSocket):
     except WebSocketDisconnect:
         print("Client disconnected websocket.")
     except Exception as exc:
-        # Just for development, send the exception to the front end.
+        # Just during development, send the exception to the front end.
         await websocket.send_json({"type":"error", "message": str(exc)})
         print(f"{exc}")
     finally:
