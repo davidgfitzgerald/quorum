@@ -1,6 +1,18 @@
 # Quorm
 
-# Frontend
+# Requirements
+
+- [Docker](https://www.docker.com/) `>=20.10.23`
+
+# Running With Docker
+
+```shell
+just start
+```
+
+# Running Frontend Locally
+
+A svelte app server for the frontend of the Quorum app.
 
 ## Local Requirements
 
@@ -31,43 +43,32 @@ npm install
 npm run open
 ```
 
-# Backend
+# Running Backend Locally
 
 A FastAPI server for the backend API of the Quorum app.
 
-## Run with Docker
-
-1. Set up `.env`
-
-```shell
-cp .env.example .env
-```
-
-2. Run docker container(s)
-
-```shell
-# Work from backend dir
-cd backend
-
-# Start the services
-docker compose up --build --force-recreate -d
-
-# Stop the services
-docker compose stop
-```
-
 ## Local Requirements
 
+- [python](https://www.python.org/downloads/) `>=3.13`
 - [poetry](https://python-poetry.org/) `>=1.8.1`
 - [uv](https://docs.astral.sh/uv) `>=0.5.26`
 - [just](https://github.com/casey/just)
 
 ## Running Locally
 
+1. Work from `backend/`
 ```shell
-# Work from backend dir
 cd backend
+```
 
+2. Set up `.env`
+
+```shell
+cp .env.example .env
+```
+
+2. Install requirements
+```shell
 # Create virtual environment with uv
 uv python install 3.13
 uv venv --python 3.13
@@ -75,7 +76,10 @@ source .venv/bin/activate
 
 # Install python packages with uv
 uv sync
+```
 
+3. Run the server
+```shell
 # Run the backend server with fastapi
 fastapi run --workers 1 quorum/main.py
 ```
