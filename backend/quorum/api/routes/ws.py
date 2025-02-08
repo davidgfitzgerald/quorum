@@ -50,9 +50,10 @@ async def websocket_rpc(websocket: WebSocket):
                     graph.add_node(x, y)
                     state = graph.model_dump()
                     payload = {"type": "state", "payload": state}
-                    # TODO Broadcast state
                     print("Sending state", state)
-                    await websocket.send_json(payload)
+                    await websocket.send_json(payload)  # send to the connected client
+                    print("Broadcasting state to other clients")
+                    await connections.broadcast(payload, client_id)
                 case _:
                     print(f"Unhandled method: {method}")
                     await websocket.send_json({"type": "error", "message": f"Method {method} not found"})

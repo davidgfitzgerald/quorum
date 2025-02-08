@@ -1,6 +1,10 @@
+from typing import Any
 import uuid
 from fastapi.websockets import WebSocketState
 from fastapi import WebSocket
+
+
+JSON = dict[str, Any]
 
 
 class ConnectionManager:
@@ -23,13 +27,21 @@ class ConnectionManager:
             print(f"Closing WebSocket")
             await websocket.close(code=code)
 
-    async def broadcast(self, message: str, sender_id: uuid.UUID):
+    async def broadcast(self, message: str | JSON, sender_id: uuid.UUID):
+        """Broadcast a message to all clients except the sender.
+
+        :param message: The message to send
+        :param sender_id: The sender ID.
+        """
         disconnected_clients = []
 
         for client_id, websocket in self.active_connections.items():
             if client_id != sender_id:
                 try:
-                    await websocket.send_text(message)
+                    if isinstance(message, str):
+                        await websocket.send_text(message)
+                    else:
+                        await websocket.send_json(message)
                 except Exception:
                     print(f"Error sending message to client {client_id}")
                     # If sending fails, mark client for removal
