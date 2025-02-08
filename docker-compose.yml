@@ -1,6 +1,5 @@
 services:
   api:
-    # image: quorum:${TAG-latest}
     restart: always
     build:
       context: ./backend
