@@ -1,11 +1,11 @@
 _default:
   just --list
 
-# Pass args such as -d through start-docker
-start-docker extra_args='':
+# Pass args such as -d through start
+start extra_args='':
     docker compose up --build --force-recreate {{extra_args}}
 
-stop-docker:
+stop:
     docker compose stop
 
 clean-python:
