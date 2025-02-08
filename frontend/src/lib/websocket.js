@@ -58,5 +58,8 @@ export function getWebSocket() {
 	socket.onclose = (event) => {
 		console.log('WebSocket connection to backend closed/failed:', event.reason);
 		socket = null;
+
+		// Try reconnecting
+		socket = getWebSocket()
 	};
 }
