@@ -1,9 +1,21 @@
 _default:
   just --list
 
-# Pass args such as -d through start
-start extra_args='':
-    docker compose up --build --force-recreate {{extra_args}}
+start-docker:
+    docker compose up --build --force-recreate -d
+
+open:
+    #!/usr/bin/env bash
+    until curl --silent --fail http://localhost:5173 > /dev/null; do
+        echo "Waiting for http://localhost:5173..."
+        sleep 1
+    done
+    open http://localhost:5173
+
+logs:
+    docker compose logs -f
+
+start: start-docker open logs
 
 stop:
     docker compose stop

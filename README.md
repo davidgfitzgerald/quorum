@@ -7,16 +7,10 @@
 
 # Running With Docker
 
-1. Launch the docker containers
+Starting the docker containers and opening the web app is as easy as:
 
 ```shell
 just start
-```
-
-2. Open the application
-
-```shell
-open http://localhost:4173
 ```
 
 # Running Frontend Locally
