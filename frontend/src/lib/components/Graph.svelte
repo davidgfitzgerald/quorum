@@ -2,10 +2,9 @@
 	import Graph from 'graphology';
 	import Sigma from 'sigma';
 	import { data } from '../state.svelte';
-	import { getWebSocket } from '../websocket';
+	import { websocketState } from '../ws.svelte';
 
-	// The client's websocket connection to the backend
-	const socket = getWebSocket()
+	const socket = $derived(websocketState.websocket)
 
 	// The div containing the sigma graph
 	let sigmaGraphContainer;
