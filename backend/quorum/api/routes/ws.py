@@ -45,13 +45,12 @@ async def websocket_rpc(websocket: WebSocket):
                     await websocket.send_json({"type": "echo", "message": data.get("message")})
                 case "addNode":
                     # TODO error handling
-                    print("Received addNode RPC call")
                     x = data.get("payload").get("x")
                     y = data.get("payload").get("y")
-                    print(f"Received x={x}, y={y}")
                     graph.add_node(x, y)
                     state = graph.model_dump()
                     payload = {"type": "state", "payload": state}
+                    # TODO Broadcast state
                     print("Sending state", state)
                     await websocket.send_json(payload)
                 case _:
