@@ -4,8 +4,8 @@
 	"version": "0.0.0",
 	"type": "module",
 	"scripts": {
-		"dev": "vite",
-		"open": "npm run dev -- --open --host",
+		"dev": "vite --host",
+		"open": "npm run dev -- --open",
 		"build": "vite build",
 		"preview": "vite preview",
 		"format": "prettier --write .",
