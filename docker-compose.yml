@@ -3,14 +3,14 @@ services:
     # image: quorum:${TAG-latest}
     restart: always
     build:
-      context: .
+      context: ./backend
       dockerfile: Dockerfile
     env_file:
-      - .env
+      - ./backend/.env
     ports:
       - "8000:8000"
     volumes:
-      - ./quorum:/app/quorum
+      - ./backend/quorum:/app/quorum
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
       interval: 300s
