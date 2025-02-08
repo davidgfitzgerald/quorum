@@ -4,7 +4,7 @@
 	import { data } from '../state.svelte';
 	import { getWebSocket } from '../websocket';
 
-	// The clients websocket connection to the backend
+	// The client's websocket connection to the backend
 	const socket = getWebSocket()
 
 	// The div containing the sigma graph
