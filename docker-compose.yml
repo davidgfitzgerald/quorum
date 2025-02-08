@@ -23,13 +23,7 @@ services:
     ports:
       - "4173:4173"
     volumes:
-      - ./frontend:/app
-      # Anonymous volume mounts for /app/node_modules and /app/dist 
-      # must be included or else the ./frontend:/app volume mount
-      # removes them node_modules from within the container. These
-      # reflect items excluded in the .dockerignore.
-      - /app/node_modules
-      - /app/dist
+      - ./frontend/src:/app/src
     # healthcheck:
     #   test: ["CMD", "curl", "-f", "http://localhost:4173/health-check/"]
     #   interval: 300s
