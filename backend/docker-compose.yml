@@ -9,7 +9,8 @@ services:
       - .env
     ports:
       - "8000:8000"
-
+    volumes:
+      - .:/app/quorum/backend
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/api/v1/utils/health-check/"]
       interval: 300s
