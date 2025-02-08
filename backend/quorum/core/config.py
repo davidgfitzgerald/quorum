@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 8
     API_V1_STR: str = "/api/v1"
     ENVIRONMENT: Literal["local", "staging", "production"] = "local"
-    FRONTEND_HOST: str = "http://localhost:4173"
+    FRONTEND_HOST: str = "http://localhost:5173"
     SECRET_KEY: str = secrets.token_urlsafe(32)
 
     BACKEND_CORS_ORIGINS: Annotated[

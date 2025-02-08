@@ -21,11 +21,11 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
     ports:
-      - "4173:4173"
+      - "5173:5173"
     volumes:
       - ./frontend/src:/app/src
     # healthcheck:
-    #   test: ["CMD", "curl", "-f", "http://localhost:4173/health-check/"]
+    #   test: ["CMD", "curl", "-f", "http://localhost:5173/health-check/"]
     #   interval: 300s
     #   timeout: 5s
     #   retries: 5
