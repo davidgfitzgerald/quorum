@@ -36,4 +36,9 @@ COPY ./quorum /app/quorum
 # Ref: https://docs.astral.sh/uv/guides/integration/docker/#intermediate-layers
 RUN --mount=type=cache,target=/root/.cache/uv uv sync
 
-CMD ["fastapi", "run", "--workers", "1", "quorum/main.py"]
+CMD uvicorn quorum.main:app \
+    --host 0.0.0.0 \
+    --port 8000 \
+    --workers 1 \
+    --reload \
+    --reload-dir /app/quorum
