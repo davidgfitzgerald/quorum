@@ -3,11 +3,20 @@
 # Requirements
 
 - [Docker](https://www.docker.com/) `>=20.10.23`
+- [just](https://github.com/casey/just)
 
 # Running With Docker
 
+1. Launch the docker containers
+
 ```shell
 just start
+```
+
+2. Open the application
+
+```shell
+open http://localhost:4173
 ```
 
 # Running Frontend Locally
@@ -52,7 +61,6 @@ A FastAPI server for the backend API of the Quorum app.
 - [python](https://www.python.org/downloads/) `>=3.13`
 - [poetry](https://python-poetry.org/) `>=1.8.1`
 - [uv](https://docs.astral.sh/uv) `>=0.5.26`
-- [just](https://github.com/casey/just)
 
 ## Running Locally
 
