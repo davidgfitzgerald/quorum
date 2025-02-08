@@ -1,10 +1,10 @@
 <script>
 	import Graph from 'graphology';
 	import Sigma from 'sigma';
-	import { data } from '../state.svelte';
-	import { websocketState } from '../ws.svelte';
+	import { graphData, web } from '../state.svelte';
 
-	const socket = $derived(websocketState.websocket)
+	// The reactive websocket connected to the backend
+	const websocket = $derived(web.socket)
 
 	// The div containing the sigma graph
 	let sigmaGraphContainer;
@@ -19,7 +19,7 @@
 	 * The reactive graphology graph data derived whenever the
 	 * graph state changes.
 	 */
-	let graph = $derived(new Graph().import(data.state));
+	let graph = $derived(new Graph().import(graphData.state));
 
 	$effect(() => {
 		/**
@@ -46,13 +46,13 @@
 	 * @param {MouseEvent} event
 	 */
 	function addNode(event) {
-		if (socket.readyState === WebSocket.CLOSED) {
+		if (websocket.readyState === WebSocket.CLOSED) {
 			console.error("Cannot send addNode request: Backend connection has closed/failed.")
 			return
 		}
 		
 		const {x, y} = getGridCoords(event)
-		socket.send(JSON.stringify({"method": "addNode", "payload": {x, y}}))
+		websocket.send(JSON.stringify({"method": "addNode", "payload": {x, y}}))
 	}
 
 	/**

@@ -2,28 +2,26 @@
  * This file contains a singleton client-side WebSocket
  * that connects to the backend.
  */
-import { data } from './state.svelte';
-import { websocketState } from './ws.svelte';
+import { graphData, web } from './state.svelte';
 
 const BACKEND = '127.0.0.1:8000'; // TODO: make configurable
 const RPC_ENDPOINT = `ws://${BACKEND}/api/v1/ws/rpc`;
-// let socket = null;
 
 /**
  * Connect to the backend and return the singleton websocket.
  * @returns {WebSocket}
  */
 export function getWebSocket() {
-	if (websocketState.websocket !== null) return websocketState.websocket;
+	if (web.socket !== null) return web.socket;
 
 	console.log('Initialising WebSocket connection to backend');
-	websocketState.websocket = new WebSocket(RPC_ENDPOINT);
+	web.socket = new WebSocket(RPC_ENDPOINT);
 
-	websocketState.websocket.onopen = () => {
+	web.socket.onopen = () => {
 		console.log('WebSocket connection to backend established');
 	};
 
-	websocketState.websocket.onmessage = (event) => {
+	web.socket.onmessage = (event) => {
 		console.debug('Message from backend:', event.data);
 		const jsonData = JSON.parse(event.data);
 
@@ -36,7 +34,7 @@ export function getWebSocket() {
 
 		switch (type) {
 			case "state":
-				data.state = jsonData.payload;
+				graphData.state = jsonData.payload;
 				return 
 			case "pong":
 				console.log("Received pong from backend")
@@ -51,13 +49,13 @@ export function getWebSocket() {
 		}
 	};
 
-	websocketState.websocket.onerror = (error) => {
+	web.socket.onerror = (error) => {
 		console.error('WebSocket error:', error);
 	};
 
-	websocketState.websocket.onclose = (event) => {
+	web.socket.onclose = (event) => {
 		console.log('WebSocket connection to backend closed/failed:', event.reason);
-		websocketState.websocket = null;
+		web.socket = null;
 		
 		console.log("Trying to reconnect websocket")
 		getWebSocket()
