@@ -1,4 +1,5 @@
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect
+from starlette import status
 
 from quorum.core.state import graph
 from quorum.core.connection import manager
@@ -27,6 +28,7 @@ async def websocket_echo(websocket: WebSocket):
 async def websocket_rpc(websocket: WebSocket):
     client_id = await manager.connect(websocket)
     state = graph.model_dump()
+    exit_code = status.WS_1000_NORMAL_CLOSURE
     try:
         payload = {"type": "state", "payload": state}
         await websocket.send_json(payload)
@@ -57,11 +59,12 @@ async def websocket_rpc(websocket: WebSocket):
                     await websocket.send_json({"type": "error", "message": f"Method {method} not found"})
 
     except WebSocketDisconnect:
-        print("Client disconnected websocket.")
+        print("Received websocket disconnect from client.")
     except Exception as exc:
         # Just during development, send the exception to the front end.
         await websocket.send_json({"type":"error", "message": str(exc)})
         print(f"{exc}")
-    finally:
         # code 1011 chosen from https://www.rfc-editor.org/rfc/rfc6455.html#section-7.4.1
-        await manager.disconnect(client_id, code=1011)
+        exit_code=status.WS_1011_INTERNAL_ERROR
+    finally:
+        await manager.disconnect(client_id, code=exit_code)
