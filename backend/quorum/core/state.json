@@ -34,6 +34,7 @@
       "target": "2",
       "attributes": {
         "size": 5,
+        "label": "test-label",
         "color": "purple"
       }
     }

@@ -38,7 +38,13 @@
 		if (sigmaInstance) {
 			sigmaInstance.setGraph(graph);
 		} else {
-			sigmaInstance = new Sigma(graph, sigmaGraphContainer);
+			sigmaInstance = new Sigma(
+				graph, 
+				sigmaGraphContainer,
+				{
+					renderEdgeLabels: true,
+				}
+			);
 		}
 	});
 
