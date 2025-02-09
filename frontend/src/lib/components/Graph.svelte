@@ -89,7 +89,10 @@
 
 <style>
 	.graph-container {
-		width: 100%;
+		width: 98%;
+		margin-left: 1%;
+		margin-right: 1%;
+
 		height: 700px;
 		outline: medium solid lightgrey;
 	}
