@@ -41,4 +41,4 @@ CMD uvicorn quorum.main:app \
     --port 8000 \
     --workers 1 \
     --reload \
-    --reload-dir /app/quorum
+    --reload-include *.json
