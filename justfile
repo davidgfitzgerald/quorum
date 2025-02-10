@@ -2,7 +2,7 @@ _default:
   just --list
 
 start-docker:
-    docker compose up --build --force-recreate -d
+    docker compose up --build --force-recreate --watch
 
 open:
     #!/usr/bin/env bash
@@ -15,7 +15,7 @@ open:
 logs:
     docker compose logs -f
 
-start: start-docker open logs
+start: start-docker
 
 stop:
     docker compose stop
